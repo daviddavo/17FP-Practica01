@@ -20,8 +20,11 @@ const string RULESFILE = "reglas.txt";
 const unsigned int MAX_INTENTOS = 3;
 const string CENTINELA = "XXX";
 
+void menu();
+tResultado play();
 string resultadoAstring(tResultado resultado);
 tElemento eleccionHumano();
+tElemento eleccionMaquina();
 string elementoAstring(tElemento elemento);
 tResultado quienGana(tElemento maquina, tElemento humano);
 bool localizacionJugador(string apodo);
@@ -31,8 +34,7 @@ int main(){
     string apodo;
 
     srand(time(NULL));
-    // cout << elementoAstring(eleccionHumano()) << endl;
-    // cout << quienGana(papel, piedra) << endl;
+
     cout << "Introduce tu apodo: ";
     cin >> apodo;
     if(localizacionJugador(apodo)){
@@ -46,7 +48,7 @@ int main(){
 }
 
 void menu(){
-    int response;
+    int response, e = 0, g = 0, p = 0;
     bool exit = false;
 
     do{
@@ -58,7 +60,7 @@ void menu(){
         do{
             cout << "Select: ";
             cin >> response;
-        }while( !(0 <= response && response <= 2) )
+        }while( !(0 <= response && response <= 2) );
 
         switch(response){
             case 0: exit = true; break;
@@ -83,8 +85,8 @@ tResultado play(){
     tElemento maquina = eleccionMaquina(), humano = eleccionHumano();
     tResultado ganador;
 
-    cout << "He elegido " << maquina << endl;
-    cout << "Has elegido " << humano << endl;
+    cout << "Has elegido " << elementoAstring(humano) << endl;
+    cout << "He elegido " << elementoAstring(maquina) << endl;
 
     ganador = quienGana(maquina, humano);
     cout << endl << resultadoAstring(ganador) << endl;
@@ -96,7 +98,7 @@ string resultadoAstring(tResultado resultado){
 
     switch(resultado){
         case empate: str = "Has sabido predecir mis movimientos..."; break;
-        case ganaMaquina: str = "Nunca podrás ganarme..."; break;
+        case ganaMaquina: str = "Nunca podras ganarme..."; break;
         case ganaHumano: str = "Es imposible... Has conseguido ganar a mi increíble IA"; break;
     }
 
@@ -113,8 +115,8 @@ tElemento eleccionHumano(){
     do{
         cout << "Seleccion: ";
         cin >> sel;
-        cin.sync();
-    }while(! (0 < sel && sel < ELEMENTOS) );
+        cin.ignore();
+    }while(! (0 < sel && sel < ELEMENTOS) && isdigit(sel));
 
     return tElemento(sel-1);
 }
@@ -132,7 +134,6 @@ string elementoAstring(tElemento elemento){
         case tijera: str = "tijera"; break;
         case lagarto: str = "lagarto"; break;
         case spock: str = "spock"; break;
-        default: str = "ERROR"; break; // Eliminar antes de entregar
     }
 
     return str;
