@@ -1,3 +1,4 @@
+// RPSLS David Davó 2017
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -8,6 +9,7 @@ using namespace std;
 - El enum tElemento
 - La constante ELEMENTOS
 - La función elementoAstring
+Esto no sería necesario con otra estructura, la verdad
 Nota: Probado con RPS-7 */
 typedef enum{ tijera, papel, piedra, lagarto, spock } tElemento;
 typedef enum{ ganaHumano, ganaMaquina, empate } tResultado;
@@ -18,15 +20,15 @@ const string RULESFILE = "reglas.txt";
 const unsigned int MAX_INTENTOS = 3;
 const string CENTINELA = "XXX";
 
-int seleccion(int maximo, int minimo);
+int seleccion(int, int);
 void menu();
 tResultado play();
-string resultadoAstring(tResultado resultado);
 tElemento eleccionHumano();
 tElemento eleccionMaquina();
-string elementoAstring(tElemento elemento);
-tResultado quienGana(tElemento maquina, tElemento humano);
-bool localizacionJugador(string apodo);
+tResultado quienGana(tElemento, tElemento);
+string elementoAstring(tElemento);
+string resultadoAstring(tResultado);
+bool localizacionJugador(string);
 bool mostrarReglas();
 
 int main(){
@@ -104,6 +106,36 @@ tResultado play(){
     return ganador;
 }
 
+tElemento eleccionHumano(){
+    for(unsigned int i = 0; i < ELEMENTOS; i++){
+        cout << i+1 << "-" << elementoAstring(tElemento(i)) << endl;
+    }
+
+    return tElemento(seleccion(1, ELEMENTOS) - 1);
+}
+
+tElemento eleccionMaquina(){
+    return tElemento(rand() % ELEMENTOS);
+}
+
+tResultado quienGana(tElemento maquina, tElemento humano){
+    return tResultado( (ELEMENTOS + maquina - humano) % 3 );
+};
+
+string elementoAstring(tElemento elemento){
+    string str;
+
+    switch (elemento){
+        case piedra: str = "piedra"; break;
+        case papel: str = "papel"; break;
+        case tijera: str = "tijera"; break;
+        case lagarto: str = "lagarto"; break;
+        case spock: str = "spock"; break;
+    }
+
+    return str;
+}
+
 string resultadoAstring(tResultado resultado){
     string str;
     int r = rand() % 2;
@@ -133,36 +165,6 @@ string resultadoAstring(tResultado resultado){
 
     return str;
 }
-
-tElemento eleccionHumano(){
-    for(unsigned int i = 0; i < ELEMENTOS; i++){
-        cout << i+1 << "-" << elementoAstring(tElemento(i)) << endl;
-    }
-
-    return tElemento(seleccion(1, ELEMENTOS) - 1);
-}
-
-tElemento eleccionMaquina(){
-    return tElemento(rand() % ELEMENTOS);
-}
-
-string elementoAstring(tElemento elemento){
-    string str;
-
-    switch (elemento){
-        case piedra: str = "piedra"; break;
-        case papel: str = "papel"; break;
-        case tijera: str = "tijera"; break;
-        case lagarto: str = "lagarto"; break;
-        case spock: str = "spock"; break;
-    }
-
-    return str;
-}
-
-tResultado quienGana(tElemento maquina, tElemento humano){
-    return tResultado( (ELEMENTOS + maquina - humano) % 3 );
-};
 
 bool localizacionJugador(string apodo){
 	ifstream registro;
