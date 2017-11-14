@@ -4,8 +4,6 @@
 
 using namespace std;
 
-// TODO: Buscar el convenio del orden de definición de los preambulos
-
 /* Para cambiar el numero de elementos, tan sólo hay que modificar:
 - El enum tElemento
 - La constante ELEMENTOS
@@ -20,6 +18,7 @@ const string RULESFILE = "reglas.txt";
 const unsigned int MAX_INTENTOS = 3;
 const string CENTINELA = "XXX";
 
+int seleccion(int maximo, int minimo);
 void menu();
 tResultado play();
 string resultadoAstring(tResultado resultado);
@@ -47,8 +46,25 @@ int main(){
 	return 0;
 }
 
+int seleccion(int minimo, int maximo){
+    char response;
+
+    do{
+        cout << "Select: ";
+
+        cin >> response;
+        cin.sync();
+
+        if(isdigit(response)){
+            response = response - '0';
+        }
+    }while( !(minimo <= response && response <= maximo) );
+
+    return response;
+}
+
 void menu(){
-    int response, e = 0, g = 0, p = 0;
+    int e = 0, g = 0, p = 0;
     bool exit = false;
 
     do{
@@ -57,12 +73,7 @@ void menu(){
         cout << "2 - Aprende a jugar" << endl;
         cout << "0 - Huir" << endl;
 
-        do{
-            cout << "Select: ";
-            cin >> response;
-        }while( !(0 <= response && response <= 2) );
-
-        switch(response){
+        switch(seleccion(0, 2)){
             case 0: exit = true; break;
             case 1:
                 switch(play()){
@@ -95,30 +106,40 @@ tResultado play(){
 
 string resultadoAstring(tResultado resultado){
     string str;
+    int r = rand() % 2;
+
+    // Esto se podría hacer mejor con arrays, la verdad
 
     switch(resultado){
-        case empate: str = "Has sabido predecir mis movimientos..."; break;
-        case ganaMaquina: str = "Nunca podras ganarme..."; break;
-        case ganaHumano: str = "Es imposible... Has conseguido ganar a mi increíble IA"; break;
+        case empate:
+            switch(r){
+                case 0: str = "Has sabido predecir mis movimientos..."; break;
+                case 1: str = "No he perdido, pero tampoco me has ganado..."; break;
+                case 2: str = "Eres igual de inteligente que yo"; break;
+            }break;
+        case ganaMaquina:
+            switch(r){
+                case 0: str = "Nunca podras ganarme..."; break;
+                case 1: str = "Por si no lo sabias, te he dejado ganar"; break;
+                case 2: str = "¿En serio creias que ibas a ganar?"; break;
+            }break;
+        case ganaHumano:
+            switch(r){
+                case 0: str = "Es imposible... Has conseguido ganar a mi increible IA"; break;
+                case 1: str = "Debe haber sido algun error del programador, no puedo perder"; break;
+                case 2: str = "Los humanos sois muy dificiles de predecir..."; break;
+            }break;
     }
 
     return str;
 }
 
 tElemento eleccionHumano(){
-    int sel;
-
     for(unsigned int i = 0; i < ELEMENTOS; i++){
         cout << i+1 << "-" << elementoAstring(tElemento(i)) << endl;
     }
 
-    do{
-        cout << "Seleccion: ";
-        cin >> sel;
-        cin.ignore();
-    }while(! (0 < sel && sel < ELEMENTOS) && isdigit(sel));
-
-    return tElemento(sel-1);
+    return tElemento(seleccion(1, ELEMENTOS) - 1);
 }
 
 tElemento eleccionMaquina(){
@@ -159,7 +180,7 @@ bool localizacionJugador(string apodo){
 
 	if (ret){
 		ret = false; // Si falla la contraseña, retorna 0
-		int i = 0;
+		unsigned int i = 0;
 		string pwd_user;
 		// Podria hacerse con for / break?
 		do{
