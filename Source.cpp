@@ -1,8 +1,10 @@
 // RPSLS David Davó 2017
 // https://github.com/daviddavo/17FP-Practica01
+// Nota: No se han usado clear ni pause para evitar incompatibilidades
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <time.h> // No necesario con g++
 
 using namespace std;
 
@@ -50,6 +52,7 @@ int main(){
 }
 
 int seleccion(int minimo, int maximo){
+	// Cada vez que se debe hacer la selección en un menú
     char response;
 
     do{
@@ -67,6 +70,7 @@ int seleccion(int minimo, int maximo){
 }
 
 void menu(){
+	// El menu principal
     int e = 0, g = 0, p = 0;
     bool exit = false;
 
@@ -96,6 +100,7 @@ void menu(){
 }
 
 tResultado play(){
+	// La función llamada cada vez que se pulsa "Jugar" en el menú
     tElemento maquina = eleccionMaquina(), humano = eleccionHumano();
     tResultado ganador;
 
@@ -108,6 +113,7 @@ tResultado play(){
 }
 
 tElemento eleccionHumano(){
+	// La elección del humano
     for(unsigned int i = 0; i < ELEMENTOS; i++){
         cout << i+1 << "-" << elementoAstring(tElemento(i)) << endl;
     }
@@ -116,14 +122,17 @@ tElemento eleccionHumano(){
 }
 
 tElemento eleccionMaquina(){
+	// La elección de la máquina
     return tElemento(rand() % ELEMENTOS);
 }
 
 tResultado quienGana(tElemento maquina, tElemento humano){
+	// El "algoritmo" que detecta quien gana
     return tResultado( (ELEMENTOS + maquina - humano) % 3 );
 };
 
 string elementoAstring(tElemento elemento){
+	// Convierte un elemento a string
     string str;
 
     switch (elemento){
@@ -138,6 +147,7 @@ string elementoAstring(tElemento elemento){
 }
 
 string resultadoAstring(tResultado resultado){
+	// Hay unas cuantas frases por darle variedad al juego
     string str;
     int r = rand() % 2;
 
@@ -168,6 +178,7 @@ string resultadoAstring(tResultado resultado){
 }
 
 bool localizacionJugador(string apodo){
+	// Retorna 1 si el usuario puede jugar
 	ifstream registro;
 	string usr, pwd_file;
 	bool ret = false;
@@ -199,6 +210,7 @@ bool localizacionJugador(string apodo){
 }
 
 bool mostrarReglas(){
+	// Muestra las reglas
 	ifstream reglas;
 	string line;
 
