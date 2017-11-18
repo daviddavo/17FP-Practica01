@@ -9,30 +9,30 @@
 using namespace std;
 
 /* Para cambiar el numero de elementos, tan sólo hay que modificar:
-- El enum tElemento
+- El enum tElemento, tal que el elemento n gana al n+(2k+1) donde k != 0 y k != ELEMENTOS
 - La constante ELEMENTOS
 - La función elementoAstring
 Esto no sería necesario con otra estructura, la verdad
-Nota: Probado con RPS-7 */
+Nota: Probado antes de entregarlo con RPS-7 http://www.umop.com/rps7.htm */
 typedef enum{ tijera, papel, piedra, lagarto, spock } tElemento;
 typedef enum{ ganaHumano, ganaMaquina, empate } tResultado;
 
-const int ELEMENTOS = 5;
+const int ELEMENTOS = 5; // Numero de elementos de tElemento
 const string USERSFILE = "registro.txt";
 const string RULESFILE = "reglas.txt";
-const unsigned int MAX_INTENTOS = 3;
+const unsigned int MAX_INTENTOS = 3; // Maximo de intentos para la contraseña
 const string CENTINELA = "XXX";
 
-int seleccion(int, int);
-void menu();
-tResultado play();
-tElemento eleccionHumano();
-tElemento eleccionMaquina();
-tResultado quienGana(tElemento, tElemento);
-string elementoAstring(tElemento);
-string resultadoAstring(tResultado);
-bool localizacionJugador(string);
-bool mostrarReglas();
+int seleccion(int, int); // Usada por los menus para no repetir codigo
+void menu(); // El menu inicial (Jugar, Relgas, Salir)
+tResultado play(); // Cuando se pulsa "1- Jugar"
+tElemento eleccionHumano(); // Retorna la eleccion del humano
+tElemento eleccionMaquina(); // Retorna la eleccion de la maquina
+tResultado quienGana(tElemento, tElemento); // Retorna quien gana dados maquina y humano
+string elementoAstring(tElemento); // Convierte un elemento a string
+string resultadoAstring(tResultado); // Convierte un resultado a string
+bool localizacionJugador(string); // Retorna True si el jugador puede jugar
+bool mostrarReglas(); // Muestra las reglas
 
 int main(){
     string apodo;
@@ -58,11 +58,11 @@ int seleccion(int minimo, int maximo){
     do{
         cout << "Select: ";
 
-        cin >> response;
+		cin >> response;
         cin.sync();
 
         if(isdigit(response)){
-            response = response - '0';
+            response = response - '0'; // ASCII
         }
     }while( !(minimo <= response && response <= maximo) );
 
@@ -127,7 +127,15 @@ tElemento eleccionMaquina(){
 }
 
 tResultado quienGana(tElemento maquina, tElemento humano){
-	// El "algoritmo" que detecta quien gana
+	/*
+	Esta función es difícil de explicar...
+	Si ordenamos el enum tElemento de tal manera que el elemento n gane al n+1,
+	también ganará al n+(2k+1) (n + impar) y perderá contra los n+2k (n+par)
+	Podemos despejar que n-m dará -par si gana n, y -impar si gana m
+	En el caso de empate n-m será igual a 0 (que, formalmente, no es par ni impar)
+	Para mantener la resta n-m > 0, le sumamos ELEMENTOS, y para saber cuando es par, impar o 0, dividimos entre 3
+	Si ordenamos el enum tResultado, podemos hacer un cast directamente
+	*/
     return tResultado( (ELEMENTOS + maquina - humano) % 3 );
 };
 
@@ -192,11 +200,10 @@ bool localizacionJugador(string apodo){
 		}
 	} while (!ret && usr != CENTINELA && !registro.fail());
 
-	if (ret){
+	if (ret){ // No se ejecuta esta parte del codigo si ha fallado la lectura del archivo
 		ret = false; // Si falla la contraseña, retorna 0
 		unsigned int i = 0;
 		string pwd_user;
-		// Podria hacerse con for / break?
 		do{
 			cout << "Password: ";
 			cin >> pwd_user;
